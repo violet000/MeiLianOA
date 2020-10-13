@@ -6,19 +6,19 @@
                 <img src="../logo.png" alt="">
             </div>
             <!-- 登录表单区域 -->
-            <el-form   label-width="0px" class="login_form">
+            <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
                 <!-- 用户名 -->
-                <el-form-item>
-                    <el-input prefix-icon="el-icon-user-solid"></el-input>
+                <el-form-item prop="username">
+                    <el-input v-model="loginForm.username" prefix-icon="el-icon-user-solid"></el-input>
                 </el-form-item>
                 <!-- 密码 -->
-                 <el-form-item>
-                    <el-input prefix-icon="el-icon-lock"></el-input>
+                 <el-form-item prop="password">
+                    <el-input type="password" v-model="loginForm.password" prefix-icon="el-icon-lock"></el-input>
                 </el-form-item>
                 <!-- 按钮 -->
                 <el-form-item class="btns">
-                  <el-button type="primary">登录</el-button>
-                  <el-button type="info">重置</el-button>
+                  <el-button type="primary" @click="login">登录</el-button>
+                  <el-button type="info" @click="reset">重置</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -27,7 +27,42 @@
 
 <script>
 export default {
-
+    data(){
+        return {
+            //登录表单的数据绑定对象
+            loginForm:{
+                username:'',
+                password:''
+            },
+            //表单的验证规则对象
+            loginFormRules:{
+                //用户名的校验规则
+                username:[
+                    { required: true, message: '请输入用户名', trigger: 'blur' },
+                    { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+                ],
+                //密码的校验规则
+                password:[
+                    { required: true, message: '请输入密码', trigger: 'blur' },
+                    { min: 5, max: 10, message: '请输入5-10位的密码', trigger: 'blur' }
+                ]
+            }
+        }
+    },
+    methods:{
+        //重置表单
+        reset(){
+           this.$refs.loginFormRef.resetFields();
+        },
+        //登录
+        login(){
+            this.$refs.loginFormRef.validate(valid => {
+               //验证失败，返回
+               if(!valid) return;
+              const { data : res } = this.$http.post("login",this.loginForm);
+            })
+        }
+    }
 }
 </script>
 
